@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="main">
+        <div class="slider">
+        </div>
+        <div class="slider2">
+        </div>
+        <div class="slider3">
+        </div>
+        <div class="slider4">
+        </div>
+        <div class="container1">
+            <h1>Sign in</h1>
+            <form >
+                <div class="input-group">
+                    <input type="text" name="email" class="email" id="email" placeholder=" " required>
+                    <label for="email">Email</label>
+                    <i class="fa-solid fa-envelope" style="color: #ffffff;"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" class="password" id="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                    <i class="fa-solid fa-eye" style="right:3rem;"></i>
+                    <i class="fa-solid fa-eye-slash" style="right:3rem;"></i>
+                    <i class="fa-solid fa-lock" style="color: #ffffff;"></i>
+                </div>
+            </form>
+            <button type="submit">Sign in</button>
+            <div class="pindah">
+                <p>Belum punya akun?<i  id="signin" onclick="slideToSignUp()">sign up</i></p>
+            </div>
+        </div>
+        <div class="container2">
+            <h1>Sign up</h1>
+            <form >
+                <div class="input-group">
+                    <input type="text" name="Nama" class="Nama" id="Nama" placeholder=" " required>
+                    <label for="Nama">Nama</label>
+                    <i class="fa-solid fa-user" style="color: #ffffff;"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="email" class="email" id="email" placeholder=" " required>
+                    <label for="email">Email</label>
+                    <i class="fa-solid fa-envelope" style="color: #ffffff;"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" class="password" id="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                    <i class="fa-solid fa-eye" style="right:3rem; "></i>
+                    <i class="fa-solid fa-eye-slash" style="right:3rem;"></i>
+                    <i class="fa-solid fa-lock" style="color: #ffffff;"></i>
+                </div>
+            </form>
+            <button type="submit">Sign up</button>
+            <div class="pindah">
+                <p>Sudah punya akun?<i id="signup" onclick="slideToSignIn()">sign in</i></p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
