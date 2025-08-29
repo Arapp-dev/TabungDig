@@ -7,8 +7,12 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
+body, html {
+  overflow: hidden;
+  touch-action: none;
+  -webkit-overflow-scrolling: auto; 
+}
 body{
-    overflow: hidden;
     color: white;
 }
 .slider{
