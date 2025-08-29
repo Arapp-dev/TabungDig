@@ -7,12 +7,8 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
-body, html {
-  overflow: hidden;
-  touch-action: none;
-  -webkit-overflow-scrolling: auto; 
-}
 body{
+    overflow:hidden;
     color: white;
 }
 .slider{
@@ -176,6 +172,13 @@ label{
 }
 
 @media screen and (max-width:450px) {
+    html, body {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: fixed; /* Ini penting untuk mencegah geser di mobile */
+    touch-action: none; /* Mencegah geser pada perangkat sentuh */
+}
 .slider{
     transition: 4s;
     border: 2px solid rgba(0, 0, 0, 0.475);
