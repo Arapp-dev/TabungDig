@@ -77,21 +77,8 @@ const slider4 = document.querySelector(".slider4")
 
 const signInbtn = document.getElementById("signin")
 const signUpbtn = document.getElementById("signup")
-
+document.addEventListener('DOMContentLoaded', () => {
 function slideToSignUp() {
-    slider.classList.remove("sliderslide");
-    slider2.classList.remove("sliderslide2");
-    slider3.classList.remove("sliderslide3");
-    slider4.classList.remove("sliderslide4");
-    setTimeout(() => {
-        
-        container1.classList.remove("slide2");
-        container2.classList.remove("slide1");
-    }, 1000);
-
-}
-
-function slideToSignIn() {
     slider.classList.add("sliderslide");
     slider2.classList.add("sliderslide2");
     slider3.classList.add("sliderslide3");
@@ -102,10 +89,32 @@ function slideToSignIn() {
         container2.classList.add("slide1");
     }, 1000);
 
+}
+
+function slideToSignIn() {
+    slider.classList.remove("sliderslide");
+    slider2.classList.remove("sliderslide2");
+    slider3.classList.remove("sliderslide3");
+    slider4.classList.remove("sliderslide4");
+    setTimeout(() => {
+        
+        container1.classList.remove("slide2");
+        container2.classList.remove("slide1");
+    }, 1000);
+
 
 }
-signInbtn.addEventListener("click",slideToSignIn)
-signUpbtn.addEventListener("click",slideToSignUp)
+
+  if(sessionStorage.getItem("ubah_data")){
+    slideToSignUp();
+    setTimeout(() => {
+        
+        sessionStorage.clear()
+    }, 2000);
+  }
+  signInbtn.addEventListener("click",slideToSignIn)
+  signUpbtn.addEventListener("click",slideToSignUp)
+});
 
 // Contoh: Menulis data ke path "/users/1"
 const submitbtn = document.getElementById("insData")
@@ -120,14 +129,19 @@ const masukbtn = document.getElementById("masuk")
 // insert data
 function insertData(){
 set(ref(db, 'data-user/'+ idNumber.value), {
+    
   idNo: idNumber.value,
   NamaOfstd: Nama.value,
   saldoStd: saldo.value,
   passwordKolom: md5(password.value)
 
 }).then(() => {
-    alert("data berhasil ditambahkan")
-    slideToSignIn()
+    swal({
+        title: "Data berhasil Ditambahkan",
+        text: "Ke halaman login untuk masuk",
+        icon: "success",
+        button: "Selesai",
+    });
 }).catch((error) => {
   console.error("Gagal menulis data:", error);
 });
@@ -139,19 +153,33 @@ function selectData(){
 
     get(child(dbref,"data-user/"+ idNumber.value)).then((snapshot)=>{
         if(idNumber.value == ""){
-            alert("harap isi id untuk menyelect data")
+            swal({
+            title: "Harap isi id untuk menyelect",
+            icon: "error",
+            button: "ok",
+        });
         }
 
             if(snapshot.exists()){
                 Nama.value = snapshot.val().NamaOfstd               
                 saldo.value = snapshot.val().saldoStd                  
             }else{
-                alert("data tak ditemukan")
+                swal({
+            title: "data Tidak ditemukan di database",
+            text: "Coba dengan Id lain",
+            icon: "error",
+            button: "ok",
+        });
             }
         
     })
     .catch((error)=>{
-        alert("tidak berhasil,error :   " + error)
+        swal({
+        title: "Terjadi kesalahan",
+        text: "Error : "+ error,
+        icon: "error",
+        button: "ok",
+    });
     })
 }
 // update data
@@ -160,8 +188,22 @@ function updateData(){
     const valpassword = (document.getElementById("validate-password"))
     if(displaValpas.style.display == "none"){
         displaValpas.style.display = "flex"
-        alert("masukkan password lama terlebih dahulu")
+        swal({
+            title: "Coba lagi",
+            text: "Masukkan passsword lama terlebih dahulu",
+            icon: "error",
+            button: "ok",
+        });
     }else{
+        if(idNumber.value == ""){
+            swal({
+            title: "Harap isi id untuk update data",
+            icon: "error",
+            button: "ok",
+        });
+        }else{
+
+        
         get(ref(db,"data-user/" + idNumber.value)).then((snapshot)=>{
                 if(snapshot.exists()){
                     if(md5(valpassword.value) == snapshot.val().passwordKolom){
@@ -172,20 +214,36 @@ function updateData(){
                             passwordKolom: md5(password.value)
                             
                             }).then(() => {
-                                alert("data berhasil diupdte")
-                                slideToSignIn()
+                                swal({
+                                    title: "Data berhasil diupdate",
+                                    text: "Ke halaman login untuk masuk",
+                                    icon: "success",
+                                    button: "Selesai",
+                                    });
+                                const container1 = document.querySelector(".container1")
                             }).catch((error) => {
                             console.error("Gagal mengupdate data:", error);
                         });
                     }else{
-                        alert("password/id salah")
+                         swal({
+                            title: "Password lama salah",
+                            text: "Coba dengan password lain",
+                            icon: "error",
+                            button: "ok",
+                        });
                     }
                 }else{
-                    alert("data tak ditemukan")
+                     swal({
+                            title: "Data Tidak ditemukan",
+                            text: "Coba dengan Id lain",
+                            icon: "error",
+                            button: "ok",
+                        });
                 }
             })
             
         }
+    }
     }
     
 
@@ -195,7 +253,11 @@ function updateData(){
 function deletetData(){
 remove(ref(db, 'data-user/'+ idNumber.value), {
 }).then(() => {
-  alert("data berhasil dihapus")
+   swal({
+        title: "Data Berhasil dihapus",
+        icon: "success",
+        button: "ok",
+    });
     location.reload()
 
 }).catch((error) => {
@@ -219,13 +281,28 @@ function masukHalamanUtama() {
         if(md5(Logpassword.value) == snapshot.val().passwordKolom){
             window.location.href = `index.html?id=${idNumber2.value}`;
         }else{
-            alert("Harap masukkan data yang benar")
+            swal({
+                title: "Password salah",
+                text: "Coba dengan password lain",
+                icon: "error",
+                button: "ok",
+            });
         }
     } else {
-      alert("ID tidak ditemukan di database.");
+       swal({
+            title: "id Tidak ditemukan di database",
+            text: "Coba dengan Id lain",
+            icon: "error",
+            button: "ok",
+        });
     }
   }).catch((error) => {
-    alert("Terjadi kesalahan: " + error);
+     swal({
+        title: "Terjadi kesalahan",
+        text: "Error : "+ error,
+        icon: "error",
+        button: "ok",
+    });
   });
 }
 

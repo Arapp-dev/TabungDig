@@ -69,6 +69,18 @@ const db = getDatabase(app);
 
 const nama = document.getElementById("nama")
 const saldo = document.getElementById("saldo")
+const tgl_disp = document.getElementById("tgl")
+
+function updateTgl(){
+    const today = new Date();
+    const formatted = today.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+    });
+    tgl_disp.innerHTML = formatted
+}
+updateTgl()
 
 // Ambil parameter ID dari URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -79,8 +91,8 @@ function selectData(){
 
     get(dbref).then((snapshot)=>{
         if(snapshot.exists()){
-            nama.innerHTML = "halo " + snapshot.val().NamaOfstd               
-            saldo.innerHTML = "saldo kamu "+ snapshot.val().saldoStd                  
+            nama.innerHTML =  snapshot.val().NamaOfstd               
+            saldo.innerHTML =  "Rp "+Number(snapshot.val().saldoStd).toLocaleString('id-ID')                  
         }else{
             const error = document.querySelector(".error-field")
             error.style.display = "flex"
@@ -92,3 +104,9 @@ function selectData(){
 }
 
 selectData()
+const btnUbahdata = document.getElementById("ubah-data")
+function halamanUbahData(){
+    window.location.href = "logreg.html"
+    sessionStorage.setItem('ubah_data', true);
+}
+btnUbahdata.addEventListener("click",halamanUbahData)
