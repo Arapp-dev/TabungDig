@@ -134,25 +134,55 @@ const masukbtn = document.getElementById("masuk")
 
 // insert data
 function insertData(){
-set(ref(db, 'data-user/'+ idNumber.value), {
-    
-  idNo: idNumber.value,
-  NamaOfstd: Nama.value,
-  saldoStd: saldo.value,
-  passwordKolom: md5(password.value)
 
-}).then(() => {
-    swal({
-        title: "Data berhasil Ditambahkan",
-        text: "Ke halaman login untuk masuk",
-        icon: "success",
-        button: "Selesai",
-    }).then(()=>{
-        location.reload()
-    })
-}).catch((error) => {
-  console.error("Gagal menulis data:", error);
-});
+
+// Ambil ID dari input
+
+// Cek apakah ID sudah ada
+get(child(ref(db), "data-user/" + idNumber.value)).then((snapshot) => {
+    if (snapshot.exists()) {
+        // Kalau ID sudah ada, beri alert
+        swal({
+        title: "ID Sudah Digunakan",
+        text: "Silakan pilih ID lain.",
+        icon: "warning",
+        button: "OK"
+        });
+    } else {  
+        if(Nama.value == '' || saldo.value == '' || password.value == ''){
+        swal({
+        title: "Kesalahan",
+        text: "Harap isi seluruh inputan",
+        icon: "warning",
+        button: "OK"
+        });
+    }else{
+        
+       
+            set(ref(db, 'data-user/'+ idNumber.value), {
+                    
+                idNo: idNumber.value.trim(),
+                NamaOfstd: Nama.value.trim(),
+                saldoStd: saldo.value.trim(),
+                passwordKolom: md5(password.value.trim())
+
+                }).then(() => {
+                    swal({
+                        title: "Data berhasil Ditambahkan",
+                        text: "Ke halaman login untuk masuk",
+                        icon: "success",
+                        button: "Selesai",
+                    }).then(()=>{
+                        location.reload()
+                    })
+                }).catch((error) => {
+                console.error("Gagal menulis data:", error);
+            });
+        }
+    }
+    }).catch((error) => {
+    console.error("Error saat cek ID:", error);
+    });
 }
 
 // select data

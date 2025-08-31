@@ -4,7 +4,9 @@
    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
    import { ref, set , get ,child , update ,remove  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
   // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+
+
+//firebase.google.com/docs/web/setup#available-libraries
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
