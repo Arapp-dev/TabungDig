@@ -20,7 +20,11 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
 
+// if(!sessionStorage.getItem("logreg")){
+//     window.history.back()
+//     sessionStorage.setItem('Query', true)
 
+// }
 
 const idNumber = document.getElementById("idNumber")
 const idNumber2 = document.getElementById("idNumber2")
@@ -106,11 +110,13 @@ function slideToSignIn() {
 }
 
   if(sessionStorage.getItem("ubah_data")){
+    setTimeout(() => {
     slideToSignUp();
     setTimeout(() => {
         
         sessionStorage.clear()
     }, 2000);
+    }, 200);
   }
   signInbtn.addEventListener("click",slideToSignIn)
   signUpbtn.addEventListener("click",slideToSignUp)
@@ -141,7 +147,9 @@ set(ref(db, 'data-user/'+ idNumber.value), {
         text: "Ke halaman login untuk masuk",
         icon: "success",
         button: "Selesai",
-    });
+    }).then(()=>{
+        location.reload()
+    })
 }).catch((error) => {
   console.error("Gagal menulis data:", error);
 });
@@ -219,7 +227,9 @@ function updateData(){
                                     text: "Ke halaman login untuk masuk",
                                     icon: "success",
                                     button: "Selesai",
-                                    });
+                                    }).then(()=>{
+                                        location.reload()
+                                    })
                                 const container1 = document.querySelector(".container1")
                             }).catch((error) => {
                             console.error("Gagal mengupdate data:", error);
@@ -279,6 +289,7 @@ function masukHalamanUtama() {
   get(child(dbref, "data-user/" + idNumber2.value)).then((snapshot) => {
     if (snapshot.exists()) {
         if(md5(Logpassword.value) == snapshot.val().passwordKolom){
+            sessionStorage.setItem("userId", idNumber2.value); // userId dari proses login
             window.location.href = `index.html?id=${idNumber2.value}`;
         }else{
             swal({

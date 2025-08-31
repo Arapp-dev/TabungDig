@@ -85,23 +85,48 @@ updateTgl()
 // Ambil parameter ID dari URL
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get("id"); // contoh hasil: "123"
+const userIdasli = sessionStorage.getItem("userId"); 
+const page = document.getElementById("pages")
+if(page){
+    page.href = `index.html?id=${userId}`
+}
 function selectData(){
     const dbref = ref(db , "data-user/"+ userId) //kalo pake ini harus langsung get(dbref)
    //const dbref = ref(db) //tapi kalo pake ini harus // get(child(dbref,"data-user/"+ userId))
-
-    get(dbref).then((snapshot)=>{
+    if(userId == userIdasli){
+        get(dbref).then((snapshot)=>{
         if(snapshot.exists()){
             nama.innerHTML =  snapshot.val().NamaOfstd               
             saldo.innerHTML =  "Rp "+Number(snapshot.val().saldoStd).toLocaleString('id-ID')                  
         }else{
-            const error = document.querySelector(".error-field")
-            error.style.display = "flex"
+            swal({
+                title: "Kesalahan",
+                text: "Harap Login sebelum masuk",
+                icon: "error",
+                button: "ok",
+            }).then(() => {
+        window.location.href = "logreg.html";
+        sessionStorage.setItem('logreg' , true)
+    });
         }
     })
     .catch((error)=>{
         alert("tidak berhasil,error :   " + error)
     })
-}
+    }
+    else{
+        swal({
+                title: "Kesalahan",
+                text: "Harap masuk dengan cara yang benar",
+                icon: "error",
+                button: "ok",
+            }).then(() => {
+        window.location.href = "logreg.html";
+        sessionStorage.setItem("logreg" , true)
+    });
+        }
+        
+    }
 
 selectData()
 const btnUbahdata = document.getElementById("ubah-data")
