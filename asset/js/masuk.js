@@ -99,7 +99,8 @@ function selectData(){
         get(dbref).then((snapshot)=>{
         if(snapshot.exists()){
             nama.innerHTML =  snapshot.val().NamaOfstd               
-            saldo.innerHTML =  "Rp "+Number(snapshot.val().saldoStd).toLocaleString('id-ID')                  
+            saldo.innerHTML =  "Rp "+Number(snapshot.val().saldoStd).toLocaleString('id-ID')  
+                 
         }else{
             swal({
                 title: "Kesalahan",
