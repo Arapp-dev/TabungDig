@@ -10,10 +10,10 @@ body{
 
 /* ----------- data ------------*/
 @media screen and (max-width:450px) {
-    body, html {
+/*     body, html {
   touch-action: none;
   -webkit-overflow-scrolling: auto; 
-}
+} */
     #saldo{
         font-size: 1.7rem;
     }
