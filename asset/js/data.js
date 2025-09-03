@@ -1,24 +1,22 @@
- import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-   import { getDatabase } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-   import { ref, set , get ,child , update ,remove  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+  import { getDatabase, ref, set, get ,child} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDybTvXoPxI9as3aoem_n0hVJME3u5Vph4",
-    authDomain: "database-a9536.firebaseapp.com",
-    databaseURL: "https://database-a9536-default-rtdb.firebaseio.com",
-    projectId: "database-a9536",
-    storageBucket: "database-a9536.firebasestorage.app",
-    messagingSenderId: "589733774370",
-    appId: "1:589733774370:web:74c6fe821f0808a459b67b"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDybTvXoPxI9as3aoem_n0hVJME3u5Vph4",
+  authDomain: "database-a9536.firebaseapp.com",
+  databaseURL: "https://database-a9536-default-rtdb.firebaseio.com",
+  projectId: "database-a9536",
+  storageBucket: "database-a9536.firebasestorage.app",
+  messagingSenderId: "589733774370",
+  appId: "1:589733774370:web:74c6fe821f0808a459b67b"
+};
 
-  // Initialize Firebase
-const app = initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
 
 // if(!sessionStorage.getItem("logreg")){
 //     window.history.back()
@@ -129,61 +127,43 @@ const submitbtn = document.getElementById("insData")
 const updbtn = document.getElementById("updateData")
 const tmplBtn = document.getElementById("tmpl")
 const masukbtn = document.getElementById("masuk")
+ const emailReg = document.getElementById("reg-email");
+ const emailLog = document.getElementById("reg-email2");
 
 
+function insertData() {
+  createUserWithEmailAndPassword(auth, emailReg.value, password.value)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const userId = user.uid; // UID dari Firebase Auth
 
-// insert data
-function insertData(){
+      // Simpan data tambahan ke Realtime Database
+      set(ref(db, "data-user/" + idNumber.value), {
+        idNo: userId,
+        NamaOfstd: Nama.value.trim(),
+        saldoStd: saldo.value.trim(),
+      }).then(()=>{
+          swal({
+              title: "Data berhasil Ditambahkan",
+              text: "Ke halaman login untuk masuk",
+              icon: "success",
+              button: "Selesai",
+          }).then(()=>{
+              location.reload()
+          })
+      })
 
-
-// Ambil ID dari input
-
-// Cek apakah ID sudah ada
-get(child(ref(db), "data-user/" + idNumber.value)).then((snapshot) => {
-    if (snapshot.exists()) {
-        // Kalau ID sudah ada, beri alert
-        swal({
-        title: "ID Sudah Digunakan",
-        text: "Silakan pilih ID lain.",
-        icon: "warning",
-        button: "OK"
+    })
+    .catch((error) => {
+      swal({
+            title: "Error",
+            text: "error:"+ error.message,
+            icon: "error",
+            button: "ok",
         });
-    } else {  
-        if(Nama.value == '' || saldo.value == '' || password.value == ''){
-        swal({
-        title: "Kesalahan",
-        text: "Harap isi seluruh inputan",
-        icon: "warning",
-        button: "OK"
-        });
-    }else{
-        
-       
-            set(ref(db, 'data-user/'+ idNumber.value), {
-                    
-                idNo: idNumber.value.trim(),
-                NamaOfstd: Nama.value.trim(),
-                saldoStd: saldo.value.trim(),
-                passwordKolom: md5(password.value.trim())
-
-                }).then(() => {
-                    swal({
-                        title: "Data berhasil Ditambahkan",
-                        text: "Ke halaman login untuk masuk",
-                        icon: "success",
-                        button: "Selesai",
-                    }).then(()=>{
-                        location.reload()
-                    })
-                }).catch((error) => {
-                console.error("Gagal menulis data:", error);
-            });
-        }
-    }
-    }).catch((error) => {
-    console.error("Error saat cek ID:", error);
-    });
+    });
 }
+// insert data
 
 // select data
 function selectData(){
@@ -316,35 +296,21 @@ updbtn.addEventListener("click",updateData)
 function masukHalamanUtama() {
   const dbref = ref(db);
 
-  get(child(dbref, "data-user/" + idNumber2.value)).then((snapshot) => {
-    if (snapshot.exists()) {
-        if(md5(Logpassword.value) == snapshot.val().passwordKolom){
-            sessionStorage.setItem("userId", idNumber2.value); // userId dari proses login
-            window.location.href = `index.html?id=${idNumber2.value}`;
-        }else{
-            swal({
-                title: "Password salah",
-                text: "Coba dengan password lain",
-                icon: "error",
-                button: "ok",
-            });
-        }
-    } else {
-       swal({
-            title: "id Tidak ditemukan di database",
-            text: "Coba dengan Id lain",
-            icon: "error",
-            button: "ok",
+ signInWithEmailAndPassword(auth, emailLog.value, Logpassword.value)
+        .then((userCredential) => {
+            // Signed in 
+        const user = userCredential.user;
+         sessionStorage.setItem("userId", idNumber2.value); // userId dari proses login
+        window.location.href = `index.html?id=${idNumber2.value}`;
+
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(errorMessage)
+           
         });
-    }
-  }).catch((error) => {
-     swal({
-        title: "Terjadi kesalahan",
-        text: "Error : "+ error,
-        icon: "error",
-        button: "ok",
-    });
-  });
+
 }
 
 masukbtn.addEventListener("click", masukHalamanUtama)
