@@ -1,21 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-  import { getDatabase, ref, set, get ,child} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
+import {  auth , db , ref, set, get, child , createUserWithEmailAndPassword , signInWithEmailAndPassword} from './firebaseConfig.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDybTvXoPxI9as3aoem_n0hVJME3u5Vph4",
-  authDomain: "database-a9536.firebaseapp.com",
-  databaseURL: "https://database-a9536-default-rtdb.firebaseio.com",
-  projectId: "database-a9536",
-  storageBucket: "database-a9536.firebasestorage.app",
-  messagingSenderId: "589733774370",
-  appId: "1:589733774370:web:74c6fe821f0808a459b67b"
-};
-
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+// Sekarang kamu aman pakai auth dan db
 
 
 // if(!sessionStorage.getItem("logreg")){
@@ -24,8 +9,7 @@ const firebaseConfig = {
 
 // }
 
-const idNumber = document.getElementById("idNumber")
-const idNumber2 = document.getElementById("idNumber2")
+
 const Nama = document.getElementById("reg-Nama")
 const saldo = document.getElementById("saldo")
 const Logpassword = document.getElementById("password")
@@ -138,8 +122,7 @@ function insertData() {
       const userId = user.uid; // UID dari Firebase Auth
 
       // Simpan data tambahan ke Realtime Database
-      set(ref(db, "data-user/" + idNumber.value), {
-        idNo: userId,
+      set(ref(db, "data-user/" + userId), {
         NamaOfstd: Nama.value.trim(),
         saldoStd: saldo.value.trim(),
       }).then(()=>{
@@ -300,8 +283,9 @@ function masukHalamanUtama() {
         .then((userCredential) => {
             // Signed in 
         const user = userCredential.user;
-         sessionStorage.setItem("userId", idNumber2.value); // userId dari proses login
-        window.location.href = `index.html?id=${idNumber2.value}`;
+        const userId = user.uid
+        sessionStorage.setItem("userId", userId); // userId dari proses login
+        window.location.href = `index.html?id=${userId}`;
 
         })
         .catch((error) => {

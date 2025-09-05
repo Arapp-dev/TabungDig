@@ -1,28 +1,4 @@
-
-
- import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-   import { getDatabase } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-   import { ref, set , get ,child , update ,remove  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-
-
-//firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDybTvXoPxI9as3aoem_n0hVJME3u5Vph4",
-    authDomain: "database-a9536.firebaseapp.com",
-    databaseURL: "https://database-a9536-default-rtdb.firebaseio.com",
-    projectId: "database-a9536",
-    storageBucket: "database-a9536.firebasestorage.app",
-    messagingSenderId: "589733774370",
-    appId: "1:589733774370:web:74c6fe821f0808a459b67b"
-  };
-
-  // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-const db = getDatabase(app);
+import{ db , ref, set, get, child  , signInWithEmailAndPassword} from "./firebaseConfig.js"
 
 // Contoh: Menulis data ke path "/users/1"
 
@@ -137,4 +113,11 @@ function halamanUbahData(){
     window.location.href = "logreg.html"
     sessionStorage.setItem('ubah_data', true);
 }
+
+document.getElementById("Tosaldo").addEventListener("click",function(){
+    window.location.href = `isi_saldo.html?id=${userId}`
+})
+document.getElementById("toHistory").addEventListener("click",function(){
+    window.location.href = `History.html?id=${userId}`
+})
 btnUbahdata.addEventListener("click",halamanUbahData)
