@@ -3,7 +3,16 @@ import{ db , ref, set, get, child  , signInWithEmailAndPassword} from "./firebas
 // Contoh: Menulis data ke path "/users/1"
 
 
-
+if(sessionStorage.getItem("udahLogin")){
+    swal({
+        title: "Kesalahan",
+        text: "Anda sudah login,Harap logout jika ingin ke halaman Login dan registrasi",
+        icon: "error",
+        button: "ok",
+    }).then(()=>{
+        sessionStorage.removeItem("udahLogin")
+    })
+}
 
 // insert data
 
@@ -68,11 +77,11 @@ const page = document.getElementById("pages")
 if(page){
     page.href = `index.html?id=${userId}`
 }
-function selectData(){
+async function selectData(){
     const dbref = ref(db , "data-user/"+ userId) //kalo pake ini harus langsung get(dbref)
    //const dbref = ref(db) //tapi kalo pake ini harus // get(child(dbref,"data-user/"+ userId))
     if(userId == userIdasli){
-        get(dbref).then((snapshot)=>{
+       await get(dbref).then((snapshot)=>{
         if(snapshot.exists()){
             nama.innerHTML =  snapshot.val().NamaOfstd               
             saldo.innerHTML =  "Rp "+Number(snapshot.val().saldoStd).toLocaleString('id-ID')  
@@ -84,13 +93,21 @@ function selectData(){
                 icon: "error",
                 button: "ok",
             }).then(() => {
-        window.location.href = "logreg.html";
-        sessionStorage.setItem('logreg' , true)
-    });
+                window.location.href = "logreg.html";
+                sessionStorage.setItem('logreg' , true)
+            });
         }
     })
     .catch((error)=>{
-        alert("tidak berhasil,error :   " + error)
+        swal({
+                title: "Kesalahan",
+                text: "Harap masuk dengan cara yang benar",
+                icon: "error",
+                button: "ok",
+            }).then(() => {
+        sessionStorage.setItem("logreg" , true)
+        window.location.href = "logreg.html";
+    });
     })
     }
     else{
@@ -107,7 +124,7 @@ function selectData(){
         
     }
 
-selectData()
+
 const btnUbahdata = document.getElementById("ubah-data")
 function halamanUbahData(){
     window.location.href = "logreg.html"
@@ -120,4 +137,13 @@ document.getElementById("Tosaldo").addEventListener("click",function(){
 document.getElementById("toHistory").addEventListener("click",function(){
     window.location.href = `History.html?id=${userId}`
 })
+document.getElementById("toBarTuj").addEventListener("click",function(){
+    window.location.href = `barangTujuan.html?id=${userId}`
+})
 btnUbahdata.addEventListener("click",halamanUbahData)
+
+
+
+ selectData().then(() => {
+     document.getElementById("load").style.display = "none"
+ });

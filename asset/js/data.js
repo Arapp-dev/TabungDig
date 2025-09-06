@@ -3,11 +3,10 @@ import {  auth , db , ref, set, get, child , createUserWithEmailAndPassword , si
 // Sekarang kamu aman pakai auth dan db
 
 
-// if(!sessionStorage.getItem("logreg")){
-//     window.history.back()
-//     sessionStorage.setItem('Query', true)
-
-// }
+if(!sessionStorage.getItem("logreg")){
+    window.history.back()
+    sessionStorage.setItem("udahLogin" , true)
+}
 
 
 const Nama = document.getElementById("reg-Nama")
@@ -286,6 +285,7 @@ function masukHalamanUtama() {
         const userId = user.uid
         sessionStorage.setItem("userId", userId); // userId dari proses login
         window.location.href = `index.html?id=${userId}`;
+        sessionStorage.removeItem("logreg")
 
         })
         .catch((error) => {
