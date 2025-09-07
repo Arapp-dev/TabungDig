@@ -223,7 +223,7 @@ async function shiftAndAddHistory() {
       }
     }
 
-    // 3. setel data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
+    // 3. setelah data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
     await set(ref(db, `History/${id}/10`), {
       kategori: kategoriPerubahan,
       saldoHis: parseInt(saldoInput) || 0,
