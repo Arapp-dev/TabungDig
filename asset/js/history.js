@@ -55,7 +55,7 @@ async function tampil_data(){
                                
                                remove(ref(db, `History/${id}/${i}`), {
                                    }).then(() => {
-                                        location.reload()
+                                        this.parentNode.remove();
                                    }).catch((error) => {
                                    console.error("Gagal menulis data:", error);
                                    });
@@ -68,9 +68,19 @@ async function tampil_data(){
                     img.src = "https://img.icons8.com/?size=100&id=85081&format=png&color=000000"
                     img.style.width = "20px"
 
-                    // Susun elemen
-                    img.appendChild(path);
                     tombol.appendChild(img);
+                    // Susun elemen
+
+                     const dispChart = document.createElement('div');
+                    dispChart.className = "absolute p-1 flex items-center justify-center bg-[red] border h-[20px] w-[20px] border-gray-300 rounded-full -top-1 -left-1";
+
+
+                    const img2 = document.createElement("i")
+                    img2.className = "fa-solid fa-shopping-cart text-white text-[10px]"
+
+
+                    // Susun elemen
+                    dispChart.appendChild(img2);
                 
                 const li = document.createElement("li");
                 li.className = "mb-5 ms-4 me-2 p-2 rounded-lg relative";
@@ -116,6 +126,10 @@ async function tampil_data(){
                 div.appendChild(h32);
 
                 li.appendChild(tombol);
+                if(urDat.keteranganHis == "Penambahan saldo bagi barang tujuan"){
+
+                    li.appendChild(dispChart);
+                }
                 li.appendChild(circleDiv);
                 li.appendChild(time);
                 li.appendChild(div);
@@ -127,7 +141,7 @@ async function tampil_data(){
     }).catch((error)=>{
         swal({
         title: "Kesalahan",
-        text: "harap Login terlebih dahulu",
+        text: "harap Login terlebih dahulu" + error.message,
         icon: "error",
         button: "ok",
     }).then(()=>{

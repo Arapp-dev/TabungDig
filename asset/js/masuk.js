@@ -142,7 +142,7 @@ async function TampilData(){
                 const container = document.getElementById('container');
 
                 const card = document.createElement('div');
-                card.className = "group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2";
+                card.className = "group relative bg-white rounded-xl  mx-6 md:mx-1 shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2";
 
                 // Image Wrapper & isi
                 const imageWrapper = document.createElement('div');
@@ -211,6 +211,11 @@ async function TampilData(){
                 productTitle.textContent = DataUrutan.NamaBrang;
                 leftContent.appendChild(productTitle);
 
+                const SaldoAs = document.createElement('p');
+                SaldoAs.className = "text-gray-500 text-sm";
+                SaldoAs.textContent = "Saldo anda sekarang ->";
+                leftContent.appendChild(SaldoAs);
+
                 const rightContent = document.createElement('div');
                 rightContent.className = "text-right";
                 flexTop.appendChild(rightContent);
@@ -219,6 +224,11 @@ async function TampilData(){
                 price.className = "text-lg font-bold text-indigo-600";
                 price.textContent = "Rp " + Number(DataUrutan.harga).toLocaleString('id-ID');
                 rightContent.appendChild(price);
+
+                const PriceSald = document.createElement('p');
+                PriceSald.className = "text-xs text-gray-400";
+                PriceSald.textContent = "Rp " + Number(DataUrutan.Saldo).toLocaleString('id-ID');
+                rightContent.appendChild(PriceSald);
 
                 // Rating & progress bar
                 const ratingWrapper = document.createElement('div');
@@ -230,7 +240,7 @@ async function TampilData(){
                 ratingWrapper.appendChild(progressWrapper);
 
                 const progressBar = document.createElement('div');
-                progressBar.className = "w-full h-4 bg-gray-400 rounded-full";
+                progressBar.className = "w-full h-4 bg-gray-400 rounded-full  overflow-hidden";
                 progressWrapper.appendChild(progressBar);
 
                 const progressInner = document.createElement('div');

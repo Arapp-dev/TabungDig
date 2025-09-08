@@ -1,7 +1,41 @@
-import {db ,set , child , ref , get ,remove} from "./firebaseConfig.js"
+import {db ,set , child , ref , get ,remove, update} from "./firebaseConfig.js"
 
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id"); // contoh hasil: "123"
+
+
+
+
+
+const TabDisp = document.getElementById("kurang")
+const salbardisp = document.getElementById("tambah")
+const selectKat = document.getElementById("selectKat")
+let Tabungan = true
+let salbar = false
+let SelDipencet = false
+let KatTab = "Pakai Saldo Tabungan"
+let KatBar = "Pakai Saldo Baru"
+let kategoriPerubahan = KatTab
+
+        const saldo = document.getElementById("saldo")
+
+TabDisp.addEventListener("change", function(){
+    selectKat.innerHTML = KatTab
+     Tabungan = true
+     salbar = false
+     SelDipencet = true
+     kategoriPerubahan = KatTab
+
+})
+salbardisp.addEventListener("change", function(){
+    selectKat.innerHTML = KatBar
+    salbar = true
+    Tabungan = false
+    SelDipencet = true
+    kategoriPerubahan = KatBar
+
+})
+
 
 async function uploadImage() {
     document.getElementById("load").style.display = "flex"
@@ -38,7 +72,7 @@ async function uploadImage() {
         document.getElementById("file").style.cursor = "not-allowed"
         document.getElementById("icon").classList.add("fa-folder")
         document.getElementById("icon").classList.remove("fa-folder-open")
-
+        document.getElementById("att").innerHTML = ""
 
         const imageUrl = data.data.url;
         const namaImgAsli = file.name;
@@ -65,6 +99,7 @@ async function uploadImage() {
                    document.getElementById("icon").classList.remove("fa-folder")
                    document.getElementById("file").disabled = false
                     document.getElementById("file").style.cursor = "pointer"
+                    document.getElementById("att").innerHTML = "Attach you files here"
                 }
                 });
         });
@@ -104,7 +139,7 @@ async function uploadImage() {
         document.getElementById("app").appendChild(container);
         const namaBarang = document.getElementById("namaBarang")
         const harga = document.getElementById("harga")
-        const saldo = document.getElementById("saldo")
+
 
 
         // document.getElementById("result").innerHTML = `
@@ -114,8 +149,33 @@ async function uploadImage() {
 
 
 
+        const BartujRef = ref(db, `Bartuj/${id}`);
         async function shiftAndAddBartuj() {
-                const BartujRef = ref(db, `Bartuj/${id}`);
+            document.getElementById("load").style.display = "flex"
+
+                if(!SelDipencet){
+                        swal({
+                                        
+                            title: 'Yakin ingin melanjutkan?',
+                            text: "Karena kategori belum diubah jadi default Pakai saldo tabungan",
+                            icon: 'warning',
+                            buttons: {
+                                cancel: true,
+                                confirm: true,
+                            },
+                        }).then((willSubmit) => {
+                        if (willSubmit) {
+                            submit().then(()=>{
+                            });
+                        }
+                        });
+                    }else{
+                        submit()
+                    }
+                }
+                async function submit() {
+                    
+                
 
                 try {
                     // 1. Ambil semua Bartuj
@@ -132,21 +192,28 @@ async function uploadImage() {
                         await remove(ref(db, `Bartuj/${id}/${i}`));
                     }
                     }
+                    if(Tabungan){
+                        shiftAndAddHistory().then(()=>{
+                            document.getElementById("load").style.display = "none"
+                        })
+                    }
+      
+                      let  saldoAkhir = saldo.value || 0
 
                     // 3. setelah data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
                     await set(ref(db, `Bartuj/${id}/5`), {
                     Url : imageUrl ,
                     NamaBrang : namaBarang.value ,
                     harga : harga.value ,
-                    Saldo : saldo.value || 0
+                    Saldo : saldoAkhir
                     }).then(()=>{
-                        document.getElementById("load").style.display = "none"
-                        swal({
+                         swal({
                             title: 'Berhasil',
                             text: "Berhasil menambah barang tujuan",
                             icon: 'success',
                             buttons: 'ok'
                         })
+                        document.getElementById("load").style.display = "none"
                     })
 
                 } catch (error) {
@@ -168,9 +235,7 @@ async function uploadImage() {
                     }
                     else{
 
-                        shiftAndAddBartuj().then(()=>{
-                            document.getElementById("load").style.display = "none"
-                        })
+                        shiftAndAddBartuj()
                     }
                 });         
             } else {
@@ -179,9 +244,63 @@ async function uploadImage() {
         } catch (error) {
             alert("Error saat upload: " + error.message);
         }
+    }
   };
-}
 
+
+
+
+
+async function shiftAndAddHistory() {
+
+    const today = new Date();
+const formatted = today.toLocaleDateString('id-ID', {
+day: 'numeric',
+month: 'long',
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+
+});
+    const saldo = document.getElementById("saldo")
+  const historyRef = ref(db, `History/${id}`);
+  const dataRef = ref(db, `data-user/${id}`);
+  let data = await get(dataRef)
+
+  try {
+    // 1. Ambil semua history
+    const snapshot = await get(historyRef);
+    let history = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel history berisi snapshot.val kalo gaada maka kosong {}
+
+    // 2. Geser data 2-10 ke 1-9
+    for (let i = 1; i < 10; i++) {
+      const next = history[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
+      if (next) {  // kalo next true atau data selanjutnya ada
+        await set(ref(db, `History/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi
+      } else {
+        // kalau data selanjutnya gaada atau data 2 masih kosong  hapus urutan no 1
+        await remove(ref(db, `History/${id}/${i}`));
+      }
+    }
+
+    // 3. setelah data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
+    await set(ref(db, `History/${id}/10`), {
+      kategori: "Kurangi Saldo",
+      saldoHis: (saldo.value) || 0,
+      tglHis: formatted || "waktu tak diketahui",
+      keteranganHis: "Penambahan saldo bagi barang tujuan"
+    }).then(()=>{
+        update(ref(db , `data-user/${id}`),{
+            saldoStd : Number(data.val().saldoStd) - Number(saldo.value)
+        }).then(()=>{
+            console.log("berhasil")
+        })
+    })
+
+  } catch (error) {
+    alert("Terjadi kesalahan: " + error.message);
+  }
+}
 
 
 
