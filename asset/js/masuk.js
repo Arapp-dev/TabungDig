@@ -164,7 +164,7 @@ async function TampilData(){
                 imageWrapper.appendChild(btnHeartWrapper);
 
                 const btnHeart = document.createElement('button');
-                btnHeart.className = "bg-white/90 w-[35px] h-[35px] text-gray-800 p-2 rounded-full shadow-md transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500 hover:text-white";
+                btnHeart.className = "lope bg-white/90 w-[35px] h-[35px] text-gray-800 p-2 rounded-full shadow-md transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500 hover:text-white";
                 btnHeart.innerHTML = '<i class="fa-solid fa-heart"></i>';
                 btnHeartWrapper.appendChild(btnHeart);
                 btnHeart.addEventListener("click" , function(){

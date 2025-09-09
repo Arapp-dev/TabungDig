@@ -1,4 +1,4 @@
-import { get , ref , set , child , remove , db, update} from "./firebaseConfig.js"
+import { get , ref , set , child ,push , remove , db, update} from "./firebaseConfig.js"
 
 const url = new URLSearchParams(window.location.search)
 const id = url.get("id")
@@ -34,7 +34,7 @@ salbardisp.addEventListener("change", function(){
 
 })
 
-
+let sisaHrga ;
 async function tampil_data(){
    await get(ref(db , `Bartuj/${id}/${idBarang}`)).then((snapshot)=>{
         if(snapshot.exists()){
@@ -52,61 +52,127 @@ async function tampil_data(){
 
             namaBarang.disabled = true
             harga.disabled = true
-
+            sisaHrga = snapshot.val().harga - snapshot.val().Saldo
             namaBarang.value = snapshot.val().NamaBrang
-            harga.value = snapshot.val().harga - snapshot.val().Saldo
+            harga.value = sisaHrga
         }
     })
 }
-
 async function submit_btn() {
-    document.getElementById("load").style.display = "flex"
-    if(!SelDipencet){
-        swal({
-                        
-            title: 'Yakin ingin melanjutkan?',
-            text: "Karena kategori belum diubah jadi default Pakai saldo tabungan",
-            icon: 'warning',
-            buttons: {
-                cancel: true,
-                confirm: true,
-            },
-        }).then((willSubmit) => {
-        if (willSubmit) {
-            submit().then(()=>{
-                document.getElementById("load").style.display = "none"
-            });
+  document.getElementById("load").style.display = "flex";
+   if (Number(saldo.value) > sisaHrga) {
+          document.getElementById("load").style.display = "none";
+      await swal({
+      title: "Gagal",
+      text: "Anda memasukkan uang terlalu banyak",
+      icon: "warning",
+      button: "ok",
+    });
+      return;
+    }
+
+  if (!SelDipencet) {
+    const willSubmit = await swal({
+      title: 'Yakin ingin melanjutkan?',
+      text: "Karena kategori belum diubah jadi default Pakai saldo tabungan",
+      icon: 'warning',
+      buttons: {
+        cancel: true,
+        confirm: true,
+      },
+    });
+
+    if (!willSubmit) {
+      document.getElementById("load").style.display = "none";
+      return;
+    }
+  }
+
+
+
+await submit()
+  async function submit() {
+      let selesaiKet = ""
+      let snapshot2 = await get(ref(db, `Bartuj/${id}/${idBarang}`));
+      let dat2 = snapshot2.val();
+      let selesai;
+      if (Tabungan) {
+          await shiftAndAddHistory();
         }
-        });
-    }else{
-        submit().then(()=>{
-                document.getElementById("load").style.display = "none"
-            });
-    }
-    async function submit(){
         
-    const snapshot = await get(ref(db , `data-user/${id}`))
-    let data = snapshot.val()
-    const snapshot2 = await get(ref(db , `Bartuj/${id}/${idBarang}`))
-    let dat2 = snapshot2.val()
-
-    if(Tabungan){
-        await shiftAndAddHistory()
-    }
-
-        update(ref(db , `Bartuj/${id}/${idBarang}`),{
-            Saldo: Number(dat2.Saldo) + Number(saldo.value )
-        }).then(()=>{
-             swal({
-        title: "Berhasil",
-        text: "berhasil menambah saldo",
-        icon: "success",
-        button: "ok", })
+        await update(ref(db, `Bartuj/${id}/${idBarang}`), {
+            Saldo: Number(dat2.Saldo) + Number(saldo.value),
         })
-    
-    }
+        snapshot2 = await get(ref(db, `Bartuj/${id}/${idBarang}`));
+        dat2 = snapshot2.val();
+        selesai = Number( dat2.Saldo) >= Number(dat2.harga)
+            
 
+      if(selesai){
+          await SelesaiBarang()
+  
+          await remove(ref(db , `Bartuj/${id}/${idBarang}`)).then(()=>{
+              swal({
+                    title: '🎉 selamat!',
+                    text: 'Proses anda telah selesai',
+                    icon: 'success',
+                    button:"ok"
+                    }).then(()=>{
+                    document.getElementById("load").style.display = "none";
+                    window.location.href = "index.html?id="+id
+                    return
+        })
+          })
+      }
+
+       
+
+      if(!selesai){
+        
+        await swal({
+          title: "Berhasil",
+          text: "Berhasil menambah saldo",
+          icon: "success",
+          button: "ok",
+        }).then(()=>{
+            document.getElementById("load").style.display = "none";
+        })
+      }
+    
+
+    return true;
+  }
 }
+
+async function SelesaiBarang(){
+     const today = new Date();
+    const formatted = today.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+
+    });
+    const dataBar =await get(ref(db , `Bartuj/${id}/${idBarang}`))
+    const data = dataBar.val()
+
+    const refBaru =  push(ref(db , `Bartuj/${id}/selesai/`))
+    const keyID = refBaru.key;
+
+        
+    
+    await set(refBaru,{
+        id : keyID ,
+        Url : data.Url ,
+        NamaBrang : data.NamaBrang ,
+        harga : data.harga ,
+        Saldo : data.Saldo ,
+        StatusBar:"Selesai" ,
+        tgl : formatted
+    })
+}
+
 
 async function shiftAndAddHistory() {
 
@@ -149,13 +215,6 @@ minute: '2-digit'
     }).then(()=>{
         update(ref(db , `data-user/${id}`),{
             saldoStd : Number(data.val().saldoStd) - Number(saldo.value)
-        }).then(()=>{
-            swal({
-                title: 'Berhasil',
-                text: "Berhasil menambah update",
-                icon: 'success',
-                buttons: 'ok'
-            })
         })
     })
 
@@ -176,4 +235,37 @@ document.getElementById("submit").addEventListener("click" , function(){
 
 document.getElementById("Back").addEventListener("click", function(){
     window.location.href = "index.html?id="+id
+}) 
+
+document.getElementById("remove").addEventListener("click", function(){
+
+    swal({
+                        
+            title: 'Yakin ingin melanjutkan?',
+            text: "Karena kategori belum diubah jadi default Pakai saldo tabungan",
+            icon: 'warning',
+            buttons: {
+                cancel: true,
+                confirm: true,
+            },
+        }).then((willSubmit) => {
+        if (willSubmit) {
+             remove(ref(db , `Bartuj/${id}/${idBarang}`)).then(()=>{
+         swal({
+                        
+            title: 'Berhasil',
+            text: "Berhasil hapus data",
+            icon: 'success',
+            buttons: 'ok' 
+            }).then(()=>{
+                    window.location.href = "index.html?id="+id
+
+            }) 
+        })
+
+        }
+        })
+
+
 })
+

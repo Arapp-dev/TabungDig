@@ -4,7 +4,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id"); // contoh hasil: "123"
 
 
-
+document.getElementById("submit").style.cursor = "not-allowed"
 
 
 const TabDisp = document.getElementById("kurang")
@@ -69,6 +69,7 @@ async function uploadImage() {
          document.getElementById("load").style.display = "none"
 
         document.getElementById("file").disabled = true
+        document.getElementById("submit").style.cursor = "pointer"
         document.getElementById("file").style.cursor = "not-allowed"
         document.getElementById("icon").classList.add("fa-folder")
         document.getElementById("icon").classList.remove("fa-folder-open")
@@ -99,6 +100,7 @@ async function uploadImage() {
                    document.getElementById("icon").classList.remove("fa-folder")
                    document.getElementById("file").disabled = false
                     document.getElementById("file").style.cursor = "pointer"
+                    document.getElementById("submit").style.cursor = "not-allowed"
                     document.getElementById("att").innerHTML = "Attach you files here"
                 }
                 });
@@ -205,7 +207,8 @@ async function uploadImage() {
                     Url : imageUrl ,
                     NamaBrang : namaBarang.value ,
                     harga : harga.value ,
-                    Saldo : saldoAkhir
+                    Saldo : saldoAkhir ,
+                    StatusBar:"Proses"
                     }).then(()=>{
                          swal({
                             title: 'Berhasil',
