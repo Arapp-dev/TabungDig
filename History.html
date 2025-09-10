@@ -19,10 +19,25 @@
     
 </div>
 <section class="antialiased bg-gray-50 text-gray-600 min-h-screen p-4">
+    <div class="flex justify-center">
+    <nav
+        class="flex overflow-x-auto items-center p-1 space-x-1 rtl:space-x-reverse text-sm text-gray-600 bg-gray-500/5 rounded-xl dark:bg-gray-500/20" >
+        <button role="tab" type="button" id="btn1"
+            class="flex whitespace-nowrap items-center h-8 px-5 font-medium rounded-lg outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-inset text-yellow-600 shadow bg-white dark:text-white dark:bg-yellow-600"
+            aria-selected="">
+            History Saldo
+        </button>
+
+        <button role="tab" type="button" id="btn2"
+            class="flex whitespace-nowrap items-center h-8 px-5 font-medium rounded-lg outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-inset hover:text-gray-800 focus:text-yellow-600 dark:text-gray-400 dark:hover:text-gray-300 dark:focus:text-gray-400">
+            History barang
+        </button>
+    </nav>
+</div>
     
-    <div class="h-full">
+    <div class="h-full ">
         <!-- Card -->
-        <div class="max-w-2xl mx-auto bg-indigo-50 shadow-lg rounded-lg">
+        <div class="max-w-2xl mx-auto bg-indigo-50 shadow-lg rounded-lg sall">
             <div class="px-6 py-5">
                 <div class="flex justify-center items-center">
                     <img src="https://img.icons8.com/?size=100&id=H0JqzxqGxPQm&format=png&color=000000" class="w-7 h-7  mx-3 md:mx-1" alt="">
@@ -55,13 +70,7 @@
                     <!-- Card content -->
                 
                 </div>
-                <div class="flex items-start ">
-                    <!-- Icon -->
-                    <ol class="list-disc relative rounded-lg pt-2 mt-4 w-full shadow-lg border-s border-gray-200 dark:border-gray-700 timeline2">                  
-                    </ol>
-                    <!-- Card content -->
-                
-                </div>
+
                 <button type="button" id="Back" class="text-white mt-4 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     <svg class="w-3.5 h-3.5 me-2" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -72,31 +81,16 @@
 
             </div>
         </div>
-    </div>
-    <div class="h-full">
         <!-- Card -->
-        <div class="max-w-2xl mx-auto bg-indigo-50 shadow-lg rounded-lg">
-            <div class="px-6 py-5">
-                <div class="flex justify-center items-center">
-                    <img src="https://img.icons8.com/?size=100&id=H0JqzxqGxPQm&format=png&color=000000" class="w-7 h-7  mx-3 md:mx-1" alt="">
-                    <h1>History Barang terakhir dengan kategori sukses</h1>
-                </div>
+        <div class="max-w-2xl mx-auto bg-indigo-50 shadow-lg rounded-lg barr">
+          
+            <div class="timeline2">
 
-                   
-                    <!-- Card content -->
-                
-                </div>
-                <div class="flex items-start ">
-                    <!-- Icon -->
-                    <ol class="list-disc relative rounded-lg pt-2 mt-4 w-full shadow-lg border-s border-gray-200 dark:border-gray-700 timeline2"> 
-              
-                    </ol>
-                    <!-- Card content -->
-                
-                </div>
+        
              
 
 
+            </div>
             </div>
         </div>
     </div>

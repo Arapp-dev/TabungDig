@@ -57,7 +57,7 @@ async function tampil_data(){
                                    }).then(() => {
                                         this.parentNode.remove();
                                    }).catch((error) => {
-                                   console.error("Gagal menulis data:", error);
+                                   console.error("Gagal menghapus data:", error);
                                    });
                            }
                            });
@@ -114,7 +114,7 @@ async function tampil_data(){
 
                 const h32 = document.createElement("h3");
                 h32.className = "text-lg font-semibold text-gray-900 dark:text-white mx-[1rem]";
-                h32.textContent = simbol + "Rp "+Number(urDat.saldoHis).toLocaleString('id-ID')  
+                h32.textContent = simbol + "Rp"+Number(urDat.saldoHis).toLocaleString('id-ID')  
 
                 // 5. Buat elemen <p>
                 const p = document.createElement("p");
@@ -165,8 +165,8 @@ async function data_bartuj() {
   
 
     
-     const tombol = document.createElement('button');
-                    tombol.className = "absolute p-1 bg-gray-100 border border-gray-300 rounded-full -top-1 -right-1";
+                    const tombol = document.createElement('button');
+                    tombol.className = "absolute p-1 bg-gray-100 border border-gray-300 rounded-full top-0 right-0";
 
                     // Tambahkan event klik untuk menyembunyikan elemen induknya
                     tombol.addEventListener('click', function () {
@@ -183,11 +183,11 @@ async function data_bartuj() {
                            }).then((willSubmit) => {
                            if (willSubmit) {
                                
-                               remove(ref(db, `History/${id}/${i}`), {
+                               remove(ref(db, `Bartuj/${id}/selesai/${key}`), {
                                    }).then(() => {
-                                        this.parentNode.remove();
+                                        card.className = "hidden"
                                    }).catch((error) => {
-                                   console.error("Gagal menulis data:", error);
+                                   console.error("Gagal Menghapus data:", error);
                                    });
                            }
                            });
@@ -202,70 +202,74 @@ async function data_bartuj() {
                     // Susun elemen
 
                      const dispChart = document.createElement('div');
-                    dispChart.className = "absolute p-1 flex items-center justify-center bg-[red] border h-[20px] w-[20px] border-gray-300 rounded-full -top-1 -left-1";
-
-
+                    dispChart.className = "absolute p-1 flex items-center justify-center bg-[red] border h-[20px] w-[20px] border-gray-300 rounded-full top-0 left-0";
                     const img2 = document.createElement("i")
                     img2.className = "fa-solid fa-shopping-cart text-white text-[10px]"
 
 
                     // Susun elemen
                     dispChart.appendChild(img2);
-                
-                const li = document.createElement("li");
-                li.className = "mb-5 ms-4 h-auto me-2 p-2 rounded-lg flex bg-[rgba(56,224,56,0.2)] relative";
 
-                // 2. Buat elemen <div> indikator bulat
-                const circleDiv = document.createElement("div");
-                circleDiv.className = "absolute w-3 h-3 bg-indigo-50 rounded-full mt-1.5 -start-1.5 dark:border-gray-900 dark:bg-gray-700";
+                                        // Buat elemen container utama
+                    const card = document.createElement('div');
+                    card.className = 'group rounded-xl my-5 overflow-hidden flex shadow hover:shadow-md bg-white cursor-pointer h-28';
+             
+                    // Bagian kiri (konten teks)
+                    const leftDiv = document.createElement('div');
+                    leftDiv.className = 'w-7/12 pl-3 relative overflow-hidden truncate p-3 text-text1 flex flex-col justify-center';
 
-                // 3. Buat elemen <time>
-                const time = document.createElement("time");
-                time.className = "mb-1 text-sm font-normal leading-none text-gray-700 dark:text-gray-500";
-                time.textContent = item.tgl;
-                
-                const div = document.createElement("div");
-                div.className = "flex justify-between";
-                const div2 = document.createElement("div");
-                div2.className = "mb-5 ms-4 me-2 p-2 rounded-lg w-full relative";
-                const div3 = document.createElement("div");
-                div3.className = "";
+                    // Judul
+                    const title = document.createElement('p');
+                    title.className = 'text-base mb-2 font-bold text-green-400 truncate';
+                    title.textContent = item.StatusBar;
+                    leftDiv.appendChild(title);
 
-                // 4. Buat elemen <h3>
-                const h31 = document.createElement("h3");
-                h31.className = "text-lg font-semibold text-gray-900 dark:text-white";
-                h31.textContent = item.NamaBrang;
+                    // Info user
+                    const userInfo = document.createElement('div');
+                    userInfo.className = 'text-xs text-primary mb-2';
 
+                    const userLink = document.createElement('a');
+                    userLink.className = 'flex items-center justify-between';
 
-                const h32 = document.createElement("h3");
-                h32.className = "text-lg font-semibold text-gray-900 dark:text-white mx-[1rem]";
-                h32.textContent = "Rp "+Number(item.harga).toLocaleString('id-ID')  
+                    const NamaB = document.createElement('h1');
+                    NamaB.textContent = item.NamaBrang
+                    NamaB.className = 'font-bold text-xl';
 
-                // 5. Buat elemen <p>
-                const p = document.createElement("p");
-                p.className = "text-base font-normal text-gray-500 dark:text-gray-400";
-                p.textContent = item.StatusBar;
+                    const hargaR = document.createElement('span');
+                    hargaR.className = 'font-bold tracking-wide text-sm';
+                    hargaR.textContent = `Rp ${Number(item.harga).toLocaleString('id-ID')}`
 
-                // 6. Masukkan semua elemen ke dalam <li>
-                div.appendChild(h31);
-                div.appendChild(h32);
+         
 
-                div2.appendChild(tombol);
+                    userLink.appendChild(NamaB);
+                    userLink.appendChild(hargaR);
+                    userInfo.appendChild(userLink);
+                    leftDiv.appendChild(userInfo);
+                    leftDiv.appendChild(dispChart);
 
+                    // Tanggal dan waktu
+                    const metaInfo = document.createElement('div');
+                    metaInfo.className = 'text-sm text-text2 transition-all duration-300 tracking-wider truncate group-hover:-translate-x-10 group-hover:overflow-visible  md:group-hover:translate-x-0';
+                    metaInfo.textContent = item.tgl
+                    leftDiv.appendChild(metaInfo);
 
-                    div2.appendChild(dispChart);
+                    // Bagian kanan (gambar)
+                    const rightDiv = document.createElement('div');
+                    rightDiv.className = 'lg:flex flex relative w-5/12 p-2';
+                    rightDiv.appendChild(tombol)
 
-                div2.appendChild(circleDiv);
-                div2.appendChild(time);
-                div2.appendChild(div);
-                div2.appendChild(p);
-                const img3 = document.createElement("img")
-                img3.src = item.Url
-                img3.className = " w-[70px] h-[70px] my-3 mx-3 rounded-lg object-cover"
-                div3.appendChild(img3)
-                li.appendChild(div3)
-                li.appendChild(div2)
-                document.querySelector(".timeline2").appendChild(li);
+                    const rightImg = document.createElement('img');
+                    rightImg.src = item.Url
+                    rightImg.className = 'rounded-xl object-cover w-full h-full';
+                    rightDiv.appendChild(rightImg);
+
+                    // Gabungkan semuanya
+                    card.appendChild(leftDiv);
+                    card.appendChild(rightDiv);
+
+                    // Masukkan ke dalam body (atau container tertentu)
+
+                document.querySelector(".timeline2").appendChild(card);
                 
                    });
             }
@@ -282,5 +286,45 @@ tampil_data().then(() => {
     document.getElementById("load").style.display = "none"
 });
 
+let btn1Set = true
+let btn2Set = false
+document.getElementById("btn1").addEventListener("click", ()=>{
+    btn1Set = true
+    btn2Set = false
 
+    btn1.classList.add('text-yellow-600');
+    btn2.classList.remove('text-yellow-600');
+    btn1.classList.add('bg-white');
+    btn2.classList.remove('bg-white');
+    Tab()
+})
+document.getElementById("btn2").addEventListener("click", ()=>{
+    btn2Set = true
+    btn1Set = false
+
+    btn2.classList.add('bg-white');
+    btn2.classList.add('text-yellow-600');
+    btn1.classList.remove('text-yellow-600');
+    btn1.classList.remove('bg-white');
+    Tab()
+})
+
+function Tab(){
+    const tab1 = document.querySelector(".sall")
+    const tab2 = document.querySelector(".barr")
+    if(btn1Set){
+        tab1.classList.remove('hidden')
+        tab2.classList.add('hidden')
+    }else if(btn2Set){
+        tab2.classList.remove('hidden')
+        tab1.classList.add('hidden')
+    }
+}
+
+
+
+
+
+
+Tab()
 data_bartuj()
