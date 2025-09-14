@@ -1,4 +1,4 @@
-import {db , get , set , ref , remove , update ,child} from './firebaseConfig.js'
+import {db , get , set , ref , query , remove , startAt , endAt, equalTo ,orderByChild} from './firebaseConfig.js'
 
 
 if(sessionStorage.getItem("udahLogin")){
@@ -26,11 +26,116 @@ if(id != sessionStorage.getItem("userId")){
         window.location.href = "logreg.html"
     })
 }
+
+
+
+const kurangDisp = document.getElementById("kurang")
+const tambahDisp = document.getElementById("tambah")
+const hisbarDisp = document.getElementById("hisBar")
+const alldisp = document.getElementById("All")
+const selectKat = document.getElementById("selectKat")
+let Kurangi = false
+let tambahi = false
+let barangi = false
+let All = true
+let KatKur = "History Kurangi Saldo"
+let KatTam = "History Tambah Saldo"
+let KatBar = "History dari barang tujuan"
+let AllKat = "Semua"
+
+kurangDisp.addEventListener("change", function(){
+    selectKat.innerHTML = KatKur
+     Kurangi = true
+     tambahi = false
+     barangi = false
+     All = false
+
+    tampil_data()
+
+
+})
+tambahDisp.addEventListener("change", function(){
+    selectKat.innerHTML = KatTam
+    tambahi = true
+    Kurangi = false
+    barangi = false
+    All = false
+
+
+    tampil_data()
+
+})
+hisbarDisp.addEventListener("change", function(){
+    selectKat.innerHTML = KatBar
+    barangi = true
+    Kurangi = false
+    tambahi = false
+    All = false
+
+    tampil_data()
+
+})
+alldisp.addEventListener("change", function(){
+    selectKat.innerHTML = AllKat
+    All = true
+    Kurangi = false
+    tambahi = false
+    barangi = false
+
+    tampil_data()
+
+
+})
+
+
+
+let data = null
+
+
+
+      
+
+
 async function tampil_data(){
-   await get(ref(db , `History/${id}`)).then((snapshot)=>{
-        if(snapshot.exists()){
-            const data = snapshot.val();
-            for (let i = 10; i >= 1; i = i - 1) {
+    document.querySelector(".timeline").innerHTML = "";
+
+    
+
+                
+        const filterRef = ref(db, `History/${id}`);
+    
+            if(tambahi){
+                // Query: Filter where role == "admin"
+                    const q = query(filterRef, orderByChild("kategori"), equalTo("Tambah Saldo"));
+                    const snapshot = await get(q);
+                    data = snapshot.val();
+            }else if(Kurangi){
+                // Query: Filter where role == "admin"
+                    const q = query(filterRef, orderByChild("kategori"), equalTo("Kurangi Saldo"));
+                    const snapshot = await get(q);
+                    data = [];
+
+                    snapshot.forEach(childSnap => {
+                         const dataX = childSnap.val();
+                        if (dataX.keteranganHis !== "Penambahan saldo bagi barang tujuan") {
+                            data.push(dataX);
+                            console.log(data)
+                        }
+                        });
+            }else if(All){
+                // Query: Filter where role == "admin"
+                    const snapshot = await get(ref(db , `History/${id}`))
+                    data = snapshot.val(); 
+            }else{
+                    const q = query(filterRef, orderByChild("keteranganHis"), equalTo("Penambahan saldo bagi barang tujuan"));
+                    const snapshot = await get(q);
+                    data = snapshot.val(); 
+            }
+
+      
+   
+
+    for (let i = 10; i >= 0; i = i - 1) {
                 const urDat = data[i]
                 if (!urDat) continue;
             
@@ -138,18 +243,7 @@ async function tampil_data(){
                  document.querySelector(".timeline").appendChild(li);
             }
         }
-    }).catch((error)=>{
-        swal({
-        title: "Kesalahan",
-        text: "harap Login terlebih dahulu" + error.message,
-        icon: "error",
-        button: "ok",
-    }).then(()=>{
-        sessionStorage.setItem("logreg" , true)
-        window.location.href = "logreg.html"
-    })
-    })
-}
+
 
 async function data_bartuj() {
 
@@ -165,126 +259,137 @@ async function data_bartuj() {
   
 
     
-                    const tombol = document.createElement('button');
-                    tombol.className = "absolute p-1 bg-gray-100 border border-gray-300 rounded-full top-0 right-0";
+const container = document.querySelector(".timeline2");
 
-                    // Tambahkan event klik untuk menyembunyikan elemen induknya
-                    tombol.addEventListener('click', function () {
-                        swal({
-                   
-       
-                               title: 'Yakin ingin Menghapus?',
-                               text: "History akan dihapus permanen",
-                               icon: 'warning',
-                               buttons: {
-                                   cancel: true,
-                                   confirm: true,
-                               },
-                           }).then((willSubmit) => {
-                           if (willSubmit) {
-                               
-                               remove(ref(db, `Bartuj/${id}/selesai/${key}`), {
-                                   }).then(() => {
-                                        card.className = "hidden"
-                                   }).catch((error) => {
-                                   console.error("Gagal Menghapus data:", error);
-                                   });
-                           }
-                           });
-                    });
+const card = document.createElement("article");
+card.className = `
+  relative w-full max-w-sm mx-auto my-4
+  bg-white rounded-2xl shadow-xl border border-gray-100
+  transform transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl
+  flex flex-col
+`;
 
-                    // Buat elemen SVG
-                    const img = document.createElement("img")
-                    img.src = "https://img.icons8.com/?size=100&id=85081&format=png&color=000000"
-                    img.style.width = "20px"
+// Image container with a subtle overlay
+const imgWrapper = document.createElement("div");
+imgWrapper.className = "relative w-full aspect-[16/9] overflow-hidden rounded-[15px_15px_0_0]";
+imgWrapper.style.backgroundColor = 'rgba(0,0,0,0.05)'; // A light, modern overlay
 
-                    tombol.appendChild(img);
-                    // Susun elemen
+const img = document.createElement("img");
+img.src = item.Url || "https://via.placeholder.com/400x225";
+img.alt = item.NamaBrang || "Gambar Barang";
+img.className = "w-full h-full object-cover transition-transform duration-300 hover:scale-105 " ;
 
-                     const dispChart = document.createElement('div');
-                    dispChart.className = "absolute p-1 flex items-center justify-center bg-[red] border h-[20px] w-[20px] border-gray-300 rounded-full top-0 left-0";
-                    const img2 = document.createElement("i")
-                    img2.className = "fa-solid fa-shopping-cart text-white text-[10px]"
+imgWrapper.appendChild(img);
+card.appendChild(imgWrapper);
 
+// Content section
+const content = document.createElement("div");
+content.className = "p-6 flex flex-col space-y-4";
 
-                    // Susun elemen
-                    dispChart.appendChild(img2);
+// Title & Price (using flexbox for alignment)
+const header = document.createElement("div");
+header.className = "flex justify-between items-start";
 
-                                        // Buat elemen container utama
-                    const card = document.createElement('div');
-                    card.className = 'group rounded-xl my-5 overflow-hidden flex shadow hover:shadow-md bg-white cursor-pointer h-28';
-             
-                    // Bagian kiri (konten teks)
-                    const leftDiv = document.createElement('div');
-                    leftDiv.className = 'w-7/12 pl-3 relative overflow-hidden truncate p-3 text-text1 flex flex-col justify-center';
+const nama = document.createElement("h2");
+nama.className = "text-xl font-bold text-gray-900 leading-snug truncate pr-4";
+nama.title = item.NamaBrang || "Nama Barang";
+nama.textContent = item.NamaBrang || "Nama Barang";
 
-                    // Judul
-                    const title = document.createElement('p');
-                    title.className = 'text-base mb-2 font-bold text-green-400 truncate';
-                    title.textContent = item.StatusBar;
-                    leftDiv.appendChild(title);
+const harga = document.createElement("span");
+harga.className = "text-xl font-bold text-gray-800";
+harga.textContent = `Rp ${Number(item.harga || 0).toLocaleString("id-ID")}`;
 
-                    // Info user
-                    const userInfo = document.createElement('div');
-                    userInfo.className = 'text-xs text-primary mb-2';
+header.appendChild(nama);
+header.appendChild(harga);
+content.appendChild(header);
 
-                    const userLink = document.createElement('a');
-                    userLink.className = 'flex items-center justify-between';
+// Meta information (date & status)
+const meta = document.createElement("div");
+meta.className = "flex items-center space-x-3 text-sm text-gray-500";
 
-                    const NamaB = document.createElement('h1');
-                    NamaB.textContent = item.NamaBrang
-                    NamaB.className = 'font-bold text-xl';
+const tanggal = document.createElement("time");
+tanggal.dateTime = item.tgl || "";
+tanggal.textContent = item.tgl || "-";
 
-                    const hargaR = document.createElement('span');
-                    hargaR.className = 'font-bold tracking-wide text-sm';
-                    hargaR.textContent = `Rp ${Number(item.harga).toLocaleString('id-ID')}`
+const statusColors = {
+  Sukses: { bg: "bg-green-100", text: "text-green-700" },
+  Pending: { bg: "bg-yellow-100", text: "text-yellow-700" },
+  Gagal: { bg: "bg-red-100", text: "text-red-700" },
+};
+const statusInfo = statusColors[item.StatusBar] || { bg: "bg-green-100", text: "text-green-600" };
 
-         
+const status = document.createElement("span");
+status.className = `
+  px-2.5 py-1 rounded-full text-xs font-semibold
+  ${statusInfo.bg} ${statusInfo.text}
+  capitalize select-none
+`;
+status.textContent = item.StatusBar || "Sukses";
 
-                    userLink.appendChild(NamaB);
-                    userLink.appendChild(hargaR);
-                    userInfo.appendChild(userLink);
-                    leftDiv.appendChild(userInfo);
-                    leftDiv.appendChild(dispChart);
+meta.appendChild(tanggal);
+meta.appendChild(status);
+content.appendChild(meta);
 
-                    // Tanggal dan waktu
-                    const metaInfo = document.createElement('div');
-                    metaInfo.className = 'text-sm text-text2 transition-all duration-300 tracking-wider truncate group-hover:-translate-x-10 group-hover:overflow-visible  md:group-hover:translate-x-0';
-                    metaInfo.textContent = item.tgl
-                    leftDiv.appendChild(metaInfo);
+card.appendChild(content);
 
-                    // Bagian kanan (gambar)
-                    const rightDiv = document.createElement('div');
-                    rightDiv.className = 'lg:flex flex relative w-5/12 p-2';
-                    rightDiv.appendChild(tombol)
+// Actions section with delete button
+const actions = document.createElement("div");
+actions.className = "absolute -top-3 right-7";
 
-                    const rightImg = document.createElement('img');
-                    rightImg.src = item.Url
-                    rightImg.className = 'rounded-xl object-cover w-full h-full';
-                    rightDiv.appendChild(rightImg);
+const hapusBtn = document.createElement("button");
+hapusBtn.className = `
+  p-3 rounded-full bg-red-200 hover:bg-red-100 text-black absolute
+  transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400
+  shadow-md hover:shadow-lg
+`;
+hapusBtn.setAttribute("aria-label", "Hapus item");
 
-                    // Gabungkan semuanya
-                    card.appendChild(leftDiv);
-                    card.appendChild(rightDiv);
+hapusBtn.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+`;
 
-                    // Masukkan ke dalam body (atau container tertentu)
+hapusBtn.addEventListener("click", () => {
+  swal({
+    title: 'Yakin ingin menghapus?',
+    text: "History akan dihapus permanen.",
+    icon: 'warning',
+    buttons: {
+      cancel: { text: "Batal", value: false, visible: true },
+      confirm: { text: "Hapus", value: true, visible: true, className: "bg-red-500 hover:bg-red-600" },
+    },
+  }).then((confirm) => {
+    if (confirm) {
+      remove(ref(db, `Bartuj/${id}/selesai/${key}`))
+        .then(() => card.remove())
+        .catch((err) => console.error("Gagal menghapus:", err));
+    }
+  });
+});
 
-                document.querySelector(".timeline2").appendChild(card);
-                
+actions.appendChild(hapusBtn);
+card.appendChild(actions);
+
+container.appendChild(card);
                    });
             }
 }
 
 
 
+const back = document.querySelectorAll(".Back")
+back.forEach((backbtn) =>{
 
-document.getElementById("Back").addEventListener("click", function(){
-    window.location.href = "index.html?id="+id
+    backbtn.addEventListener("click", function(){
+        window.location.href = "index.html?id="+id
+    })
 })
 
-tampil_data().then(() => {
-    document.getElementById("load").style.display = "none"
-});
+    tampil_data().then(() => {
+        document.getElementById("load").style.display = "none"
+    });
+
 
 let btn1Set = true
 let btn2Set = false
@@ -309,15 +414,20 @@ document.getElementById("btn2").addEventListener("click", ()=>{
     Tab()
 })
 
+
 function Tab(){
     const tab1 = document.querySelector(".sall")
+    const con = document.querySelector(".con")
     const tab2 = document.querySelector(".barr")
     if(btn1Set){
         tab1.classList.remove('hidden')
         tab2.classList.add('hidden')
+        con.appendChild(tab1)
     }else if(btn2Set){
         tab2.classList.remove('hidden')
         tab1.classList.add('hidden')
+        con.appendChild(tab2)
+
     }
 }
 

@@ -185,7 +185,7 @@ async function uploadImage() {
                     let Bartuj = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel Bartuj berisi snapshot.val kalo gaada maka kosong {}
 
                     // 2. Geser data 2-10 ke 1-9
-                    for (let i = 1; i < 5; i++) {
+                    for (let i = 1; i < 8; i++) {
                     const next = Bartuj[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
                     if (next) {  // kalo next true atau data selanjutnya ada
                         await set(ref(db, `Bartuj/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi

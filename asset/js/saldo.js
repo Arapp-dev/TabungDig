@@ -109,6 +109,7 @@ tambahDisp.addEventListener("change", function(){
         saldoInput = 0
     }
     animate_submit()
+    document.getElementById("load2").style.display = "flex"
     
     signInWithEmailAndPassword(auth, email.value, password.value)
     .then((userCredential) => {
@@ -257,9 +258,11 @@ async function shiftAndAddHistory() {
                const errorMessage = error.message;
                 swal({
                    title: "Kesalahan",
-                   text: "Error :" + errorMessage,
+                   text: "Error : Email/password salah" ,
                    icon: "error",
                    button: "ok",
+               }).then(()=>{
+                document.getElementById("load2").style.display = "none"
                })
            })
 

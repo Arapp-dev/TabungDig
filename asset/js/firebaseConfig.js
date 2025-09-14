@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-  import { getDatabase, ref, set, get ,child ,remove ,update ,push} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
+  import { getDatabase, ref, set, get ,child ,remove ,query ,update ,push , orderByChild , equalTo , startAt , endAt} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDybTvXoPxI9as3aoem_n0hVJME3u5Vph4",
@@ -18,4 +18,4 @@ const firebaseConfig = {
   const db = getDatabase(app);
   const dbref = ref(db)
 
-  export { auth ,dbref,push, db , app , ref, set, get, child , createUserWithEmailAndPassword , signInWithEmailAndPassword , remove ,update }
+  export { auth ,dbref,push, db , app , ref, set , query , get, child , orderByChild , equalTo , startAt , endAt, createUserWithEmailAndPassword , signInWithEmailAndPassword , remove ,update }

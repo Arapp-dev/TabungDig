@@ -1,4 +1,4 @@
-import{ db , ref, set, get, child  , signInWithEmailAndPassword} from "./firebaseConfig.js"
+import{ db , ref, set, get, child ,query , orderByChild ,equalTo  , signInWithEmailAndPassword} from "./firebaseConfig.js"
 
 // Contoh: Menulis data ke path "/users/1"
 
@@ -247,7 +247,7 @@ async function TampilData(){
                 progressInner.className = "h-full text-center text-xs text-white bg-violet-500 rounded-full";
                 let percent = ((DataUrutan.Saldo / DataUrutan.harga) * 100)
                 if (!Number.isInteger(percent)) {
-                percent = ((DataUrutan.Saldo / DataUrutan.harga) * 100).toFixed(1);
+                percent = ((DataUrutan.Saldo / DataUrutan.harga) * 100).toFixed(2);
                 }
                 progressInner.textContent = `${percent}%`;
                 progressInner.style.width = `${percent}%`;
@@ -269,6 +269,7 @@ async function TampilData(){
     }
 
 
+
 const btnUbahdata = document.getElementById("ubah-data")
 function halamanUbahData(){
     window.location.href = "logreg.html"
@@ -287,7 +288,192 @@ document.getElementById("toBarTuj").addEventListener("click",function(){
 btnUbahdata.addEventListener("click",halamanUbahData)
 
 
-
- TampilData().then(() => {
+TampilData().then(() => {
      document.getElementById("load").style.display = "none"
+     document.getElementById("container").children[0].style.display = 'none'
  });
+
+
+
+ const refdb = ref(db , `History/${userId}`)
+    const qPem = query(refdb, orderByChild("kategori"), equalTo("Tambah Saldo"));
+    const snapshotPem = await get(qPem);
+    const dataPemasukan = [];
+    snapshotPem.forEach(childSnap => {
+            const dataX = childSnap.val();
+            dataPemasukan.push(dataX);
+        });
+
+
+    const qPeng = query(refdb, orderByChild("kategori"), equalTo("Kurangi Saldo"));
+    const snapshotPengel = await get(qPeng);
+    const dataPengeluaran = [];
+
+    snapshotPengel.forEach(childSnap => {
+            const dataX = childSnap.val();
+            dataPengeluaran.push(dataX);
+        });
+
+    // const qBar = query(refdb, orderByChild("kategori"), equalTo("Tambah Saldo"));
+    // const snapshotBar = await get(qBar);
+    // const dataBarang = snapshotBar.val();
+
+
+// 1. Gabungkan semua data pemasukan dan pengeluaran
+const allTransaksi = [...dataPemasukan, ...dataPengeluaran];
+
+// 2. Ambil tanggal unik dari semua transaksi (format sudah diubah seperti "09 Sep")
+const tanggalSet = new Set(
+  allTransaksi.map(item => {
+    const rawTanggal = item.tglHis.split(" pukul")[0];
+    const dateObj = new Date(rawTanggal);
+    return dateObj.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+  })
+);
+
+const tanggalArray = Array.from(tanggalSet).sort((a, b) => {
+  // Sorting tanggal sesuai tanggal sebenarnya
+  const parseDate = str => {
+    // "09 Sep" -> buat Date dengan tahun sekarang
+    const [day, monthShort] = str.split(" ");
+    return new Date(`${monthShort} ${day}, 2025`); // pastikan tahun benar atau sesuaikan
+  };
+  return parseDate(a) - parseDate(b);
+});
+
+// 3. Buat data pemasukan dan pengeluaran per tanggal, default 0 jika gak ada
+const pemasukanByDate = tanggalArray.map(tgl => {
+  const total = dataPemasukan
+    .filter(item => {
+      const rawTanggal = item.tglHis.split(" pukul")[0];
+      const dateObj = new Date(rawTanggal);
+      const formatted = dateObj.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+      return formatted === tgl;
+    })
+    .reduce((acc, cur) => acc + Number(cur.saldoHis), 0);
+  return total;
+});
+
+const pengeluaranByDate = tanggalArray.map(tgl => {
+  const total = dataPengeluaran
+    .filter(item => {
+      const rawTanggal = item.tglHis.split(" pukul")[0];
+      const dateObj = new Date(rawTanggal);
+      const formatted = dateObj.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+      return formatted === tgl;
+    })
+    .reduce((acc, cur) => acc + Number(cur.saldoHis), 0);
+  return total;
+});
+
+const totalPemasukan = pemasukanByDate.reduce((accumulator, item) => {
+  return accumulator + Number(item);
+}, 0);
+
+const totalPengeluaran = pengeluaranByDate.reduce((accumulator, item) => {
+  return accumulator + Number(item);
+}, 0);
+const gtau = parseInt(Number((totalPemasukan - totalPengeluaran) / (totalPemasukan + totalPengeluaran)) * 100)
+if(gtau < 0){
+    document.getElementById('ketChart').className = "text-red-500"
+    document.querySelector('.bawah').setAttribute("class", "w-3 h-3 text-red-500");
+    document.querySelector('.atas').setAttribute("class", "w-3 h-3 text-red-500 hidden");
+}
+document.getElementById('ketChart').innerHTML = gtau + "%"
+document.querySelector('.pemasukan').innerHTML = "Rp" +  Number(totalPemasukan - totalPengeluaran).toLocaleString('id-ID')
+const options = {
+// set the labels option to true to show the labels on the X and Y axis
+xaxis: {
+  show: true,
+  categories: tanggalArray,
+  labels: {
+    show: true,
+    style: {
+      fontFamily: "Inter, sans-serif",
+      cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+    }
+  },
+  axisBorder: {
+    show: false,
+  },
+  axisTicks: {
+    show: false,
+  },
+},
+yaxis: {
+  show: true,
+  labels: {
+    show: true,
+    style: {
+      fontFamily: "Inter, sans-serif",
+      cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+    },
+    formatter: function (value) {
+      return "Rp " + Number(value).toLocaleString('id-ID');
+    }
+  }
+},
+series: [
+  {
+    name: "Pengeluaran",
+    data: pengeluaranByDate,
+    color: "#911adbff",
+    stroke: {
+      curve: "smooth",
+      width: 2,
+    },
+  },
+  {
+    name: "Pemasukan",
+    data: pemasukanByDate,
+    color: "#1a87dbff",
+    stroke: {
+      curve: "smooth",
+      width: 2,
+    },
+  },
+  
+],
+chart: {
+  sparkline: {
+    enabled: false
+  },
+  height: "220px",
+  width: "100%",
+  type: "area",
+  fontFamily: "Inter, sans-serif",
+  dropShadow: {
+    enabled: false,
+  },
+  toolbar: {
+    show: false,
+  },
+},
+tooltip: {
+  enabled: true,
+  x: {
+    show: false,
+  },
+},
+fill: {
+  type: "gradient",
+  gradient: {
+    opacityFrom: 0.55,
+    opacityTo: 0,
+    shade: "#1C64F2",
+    gradientToColors: ["#1C64F2"],
+  },
+},
+dataLabels: {
+  enabled: false,
+},
+stroke: {
+  width: 6,
+},
+
+}
+
+if (document.getElementById("labels-chart") && typeof ApexCharts !== 'undefined') {
+const chart = new ApexCharts(document.getElementById("labels-chart"), options);
+chart.render();
+}
