@@ -1,4 +1,4 @@
-import {db ,set , child , ref , get ,remove, update} from "./firebaseConfig.js"
+import {db ,set , child , ref , get ,push ,remove, update} from "./firebaseConfig.js"
 
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id"); // contoh hasil: "123"
@@ -272,22 +272,23 @@ minute: '2-digit'
 
   try {
     // 1. Ambil semua history
-    const snapshot = await get(historyRef);
-    let history = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel history berisi snapshot.val kalo gaada maka kosong {}
+    // const snapshot = await get(historyRef);
+    // let history = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel history berisi snapshot.val kalo gaada maka kosong {}
 
-    // 2. Geser data 2-10 ke 1-9
-    for (let i = 1; i < 10; i++) {
-      const next = history[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
-      if (next) {  // kalo next true atau data selanjutnya ada
-        await set(ref(db, `History/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi
-      } else {
-        // kalau data selanjutnya gaada atau data 2 masih kosong  hapus urutan no 1
-        await remove(ref(db, `History/${id}/${i}`));
-      }
-    }
+    // // 2. Geser data 2-10 ke 1-9
+    // for (let i = 1; i < 10; i++) {
+    //   const next = history[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
+    //   if (next) {  // kalo next true atau data selanjutnya ada
+    //     await set(ref(db, `History/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi
+    //   } else {
+    //     // kalau data selanjutnya gaada atau data 2 masih kosong  hapus urutan no 1
+    //     await remove(ref(db, `History/${id}/${i}`));
+    //   }
+    // }
 
     // 3. setelah data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
-    await set(ref(db, `History/${id}/10`), {
+     const refPush = await push(ref(db, `History/${id}`))
+    await  set(refPush ,{
       kategori: "Kurangi Saldo",
       saldoHis: (saldo.value) || 0,
       tglHis: formatted || "waktu tak diketahui",

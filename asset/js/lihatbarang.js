@@ -242,7 +242,7 @@ document.getElementById("remove").addEventListener("click", function(){
     swal({
                         
             title: 'Yakin ingin melanjutkan?',
-            text: "Karena kategori belum diubah jadi default Pakai saldo tabungan",
+            text: "Apakah yakin ingin hapus data",
             icon: 'warning',
             buttons: {
                 cancel: true,

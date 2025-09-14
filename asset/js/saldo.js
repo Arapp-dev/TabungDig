@@ -1,4 +1,4 @@
-import{ auth , db ,dbref, ref, set, get, child ,remove, createUserWithEmailAndPassword , signInWithEmailAndPassword ,update} from "./firebaseConfig.js"
+import{ auth , db ,dbref, ref, set, get, child , push ,remove, createUserWithEmailAndPassword , signInWithEmailAndPassword ,update} from "./firebaseConfig.js"
 // import{  db2, ref2, set2, get2, child2} from "./firebaseConfig2.js"
 
 
@@ -210,26 +210,29 @@ async function shiftAndAddHistory() {
 
   try {
     // 1. Ambil semua history
-    const snapshot = await get(historyRef);
-    let history = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel history berisi snapshot.val kalo gaada maka kosong {}
+    // const snapshot = await get(historyRef);
+    // let history = snapshot.exists() ? snapshot.val() : {};  // kalo snapsot ada , maka variabel history berisi snapshot.val kalo gaada maka kosong {}
 
     // 2. Geser data 2-10 ke 1-9
-    for (let i = 1; i < 10; i++) {
-      const next = history[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
-      if (next) {  // kalo next true atau data selanjutnya ada
-        await set(ref(db, `History/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi
-      } else {
-        // kalau data selanjutnya gaada atau data 2 masih kosong  hapus urutan no 1
-        await remove(ref(db, `History/${id}/${i}`));
-      }
-    }
+    // for (let i = 1; i < 10; i++) {
+    //   const next = history[i + 1]; // misal i sekarang lagi 1,atau urutan 1,kemudian ambil data di urutan 2 untuk variabel next
+    //   if (next) {  // kalo next true atau data selanjutnya ada
+    //     await set(ref(db, `History/${id}/${i}`), next); // urutan 1 (i masih 1) diganti datanya dengan variabel next yg mana berisi data ke dua tadi
+    //   } else {
+    //     // kalau data selanjutnya gaada atau data 2 masih kosong  hapus urutan no 1
+    //     await remove(ref(db, `History/${id}/${i}`));
+    //   }
+    // }
 
     // 3. setelah data baru masuk ke urutan 10 karna bakal otomatis kegeser data yg ke 10 sebelumnya ke data no 9
-    await set(ref(db, `History/${id}/10`), {
+    const refPush = await push(ref(db, `History/${id}`))
+    await  set(refPush ,{
+
       kategori: kategoriPerubahan,
       saldoHis: parseInt(saldoInput) || 0,
       tglHis: formatted || "waktu tak diketahui",
       keteranganHis: deskripsi.value || "Tanpa deskripsi"
+      
     });
 
   } catch (error) {

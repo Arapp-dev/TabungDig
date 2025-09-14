@@ -135,9 +135,9 @@ async function tampil_data(){
       
    
 
-    for (let i = 10; i >= 0; i = i - 1) {
-                const urDat = data[i]
-                if (!urDat) continue;
+                Object.keys(data).forEach((key) => {
+                    const urDat = data[key]
+                
             
             // 1. Buat elemen <li>
                   const tombol = document.createElement('button');
@@ -158,7 +158,7 @@ async function tampil_data(){
                            }).then((willSubmit) => {
                            if (willSubmit) {
                                
-                               remove(ref(db, `History/${id}/${i}`), {
+                               remove(ref(db, `History/${id}/${key}`), {
                                    }).then(() => {
                                         this.parentNode.remove();
                                    }).catch((error) => {
@@ -241,8 +241,8 @@ async function tampil_data(){
                 li.appendChild(p);
 
                  document.querySelector(".timeline").appendChild(li);
+                })
             }
-        }
 
 
 async function data_bartuj() {
