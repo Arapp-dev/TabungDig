@@ -382,7 +382,7 @@ const back = document.querySelectorAll(".Back")
 back.forEach((backbtn) =>{
 
     backbtn.addEventListener("click", function(){
-        window.location.href = "index.html?id="+id
+        window.location.href = "MainView.html?id="+id
     })
 })
 

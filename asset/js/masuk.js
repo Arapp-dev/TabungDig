@@ -1,5 +1,5 @@
 import{ db , ref, set, get, child ,query , orderByChild ,equalTo  , signInWithEmailAndPassword} from "./firebaseConfig.js"
-
+  AOS.init();
 // Contoh: Menulis data ke path "/users/1"
 
 
@@ -75,7 +75,7 @@ const userId = urlParams.get("id"); // contoh hasil: "123"
 const userIdasli = sessionStorage.getItem("userId"); 
 const page = document.getElementById("pages")
 if(page){
-    page.href = `index.html?id=${userId}`
+    page.href = `MainView.html?id=${userId}`
 }
 async function TampilData(){
     const dbref = ref(db , "data-user/"+ userId) //kalo pake ini harus langsung get(dbref)
@@ -142,6 +142,11 @@ async function TampilData(){
                 const container = document.getElementById('container');
 
                 const card = document.createElement('div');
+                card.dataset.aosMirror = "false";
+                card.dataset.aosOnce = "true";
+                card.dataset.aos = "fade-up";
+                card.dataset.aosDelay = "150";
+
                 card.className = "group relative bg-white rounded-xl  mx-6 md:mx-1 shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2";
 
                 // Image Wrapper & isi
@@ -186,6 +191,7 @@ async function TampilData(){
                 btnCartWrapper.appendChild(btnCart);
                 btnCart.addEventListener("click" ,function(){
                     window.location.href = "LihatBarang.html?id="+userId + "&idB="+i
+                    sessionStorage.setItem('idBarang' , i)
                 })
 
                 const labelNew = document.createElement('span');

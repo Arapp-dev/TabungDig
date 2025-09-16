@@ -4,6 +4,20 @@ const url = new URLSearchParams(window.location.search)
 const id = url.get("id")
 const idBarang = url.get("idB")
 const saldo = document.getElementById("saldo")
+const userIdasli = sessionStorage.getItem("userId"); 
+const userIBarang = sessionStorage.getItem("idBarang"); 
+
+if(id !== userIdasli || idBarang !== userIBarang){
+    swal({
+        title: "Kesalahan",
+        text: "Harap Masuk dengan cara yang benar",
+        icon: "error",
+        button: "ok",
+    }).then(() => {
+        window.location.href = "logreg.html";
+        sessionStorage.setItem('logreg' , true)
+    });
+}
 
 
 const TabDisp = document.getElementById("kurang")
@@ -119,7 +133,7 @@ await submit()
                     button:"ok"
                     }).then(()=>{
                     document.getElementById("load").style.display = "none";
-                    window.location.href = "index.html?id="+id
+                    window.location.href = "MainView.html?id="+id
                     return
         })
           })
@@ -234,7 +248,7 @@ document.getElementById("submit").addEventListener("click" , function(){
 })
 
 document.getElementById("Back").addEventListener("click", function(){
-    window.location.href = "index.html?id="+id
+    window.location.href = "MainView.html?id="+id
 }) 
 
 document.getElementById("remove").addEventListener("click", function(){
@@ -258,7 +272,7 @@ document.getElementById("remove").addEventListener("click", function(){
             icon: 'success',
             buttons: 'ok' 
             }).then(()=>{
-                    window.location.href = "index.html?id="+id
+                    window.location.href = "MainView.html?id="+id
 
             }) 
         })

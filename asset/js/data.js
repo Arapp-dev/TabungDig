@@ -284,7 +284,7 @@ function masukHalamanUtama() {
         const user = userCredential.user;
         const userId = user.uid
         sessionStorage.setItem("userId", userId); // userId dari proses login
-        window.location.href = `index.html?id=${userId}`;
+        window.location.href = `MainView.html?id=${userId}`;
         sessionStorage.removeItem("logreg")
 
         })

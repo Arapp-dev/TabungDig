@@ -276,7 +276,7 @@ async function shiftAndAddHistory() {
 
 document.getElementById("submit").addEventListener("click", submitPayment)
 document.getElementById("Back").addEventListener("click", function(){
-    window.location.href = "index.html?id="+id
+    window.location.href = "MainView.html?id="+id
 })
 
 
@@ -316,7 +316,7 @@ async function tampil_data(){
   }).catch((error)=>{
        swal({
             title: "Kesalahan",
-            text: "error :" + error,
+            text: "Harap Masuk dengan cara yang benar",
             icon: "error",
             button: "ok",
         }).then(()=>{

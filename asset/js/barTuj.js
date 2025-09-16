@@ -2,6 +2,18 @@ import {db ,set , child , ref , get ,push ,remove, update} from "./firebaseConfi
 
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id"); // contoh hasil: "123"
+const userIdasli = sessionStorage.getItem("userId"); 
+if(id !== userIdasli){
+    swal({
+        title: "Kesalahan",
+        text: "Harap Masuk dengan cara yang benar",
+        icon: "error",
+        button: "ok",
+    }).then(() => {
+        window.location.href = "logreg.html";
+        sessionStorage.setItem('logreg' , true)
+    });
+}
 
 
 document.getElementById("submit").style.cursor = "not-allowed"
@@ -317,7 +329,7 @@ uploadImage();
 
 
 document.getElementById("Back").addEventListener("click", function(){
-    window.location.href = "index.html?id="+id
+    window.location.href = "MainView.html?id="+id
 })
 
 
